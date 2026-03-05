@@ -1,75 +1,69 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 <title>Ram AI</title>
-
 <style>
 body{
-font-family: Arial;
 background:#111;
 color:white;
+font-family:Arial;
 text-align:center;
 }
-
-#chatbox{
-width:300px;
+#chat{
+width:350px;
 height:300px;
 border:1px solid white;
 margin:auto;
 overflow:auto;
 padding:10px;
 }
-
-input{
-width:200px;
-padding:8px;
-}
-
-button{
-padding:8px;
-}
 </style>
-
 </head>
 
 <body>
 
 <h1>Ram AI 🤖</h1>
 
-<div id="chatbox"></div>
+<div id="chat"></div>
 
-<br>
-
-<input id="userInput" placeholder="Type something...">
-<button onclick="talk()">Send</button>
+<input id="msg" placeholder="Ask anything">
+<button onclick="send()">Send</button>
 
 <script>
 
-function talk(){
+async function send(){
 
-let input=document.getElementById("userInput").value;
+let message=document.getElementById("msg").value;
 
-let chatbox=document.getElementById("chatbox");
+document.getElementById("chat").innerHTML+=
+"<p><b>You:</b> "+message+"</p>";
 
-chatbox.innerHTML += "<p><b>You:</b> "+input+"</p>";
+let response=await fetch("https://api.openai.com/v1/chat/completions",{
 
-let reply="I don't understand";
+method:"POST",
 
-if(input.toLowerCase()=="hello"){
-reply="Hello Ram 👋";
-}
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer YOUR_API_KEY"
+},
 
-if(input.toLowerCase()=="who are you"){
-reply="I am your AI assistant.";
-}
+body:JSON.stringify({
+model:"gpt-3.5-turbo",
+messages:[{role:"user",content:message}]
+})
 
-chatbox.innerHTML += "<p><b>AI:</b> "+reply+"</p>";
+});
+
+let data=await response.json();
+
+let reply=data.choices[0].message.content;
+
+document.getElementById("chat").innerHTML+=
+"<p><b>AI:</b> "+reply+"</p>";
 
 }
 
 </script>
 
 </body>
-
-  </html>
+</html>
