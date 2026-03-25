@@ -8,11 +8,11 @@
 <style>
 body {
   margin: 0;
-  overflow: hidden;
   font-family: 'Dancing Script', cursive;
+  overflow: hidden;
 }
 
-/* Envelope screen */
+/* 💌 Envelope */
 #envelopeScreen {
   height: 100vh;
   display: flex;
@@ -27,7 +27,6 @@ body {
   background: #ff6b81;
   border-radius: 12px;
   position: relative;
-  text-align: center;
 }
 
 .flap {
@@ -51,7 +50,7 @@ input {
   text-align: center;
 }
 
-/* Zip */
+/* zip */
 .zip {
   position: absolute;
   top: 40%;
@@ -59,17 +58,17 @@ input {
   transform: translateX(-50%);
   font-size: 30px;
   display: none;
-  cursor: grab;
+  cursor: pointer;
 }
 
-/* Main scene */
+/* 💖 Main */
 #mainScene {
   display: none;
   height: 100vh;
   background: radial-gradient(circle, #ff758c, #ff2e63);
 }
 
-/* Letter box */
+/* 💌 Letter */
 .letterBox {
   position: absolute;
   top: -100%;
@@ -84,45 +83,45 @@ input {
   overflow-y: auto;
   font-size: 18px;
   color: #333;
-  transition: 1.5s ease;
+  transition: 1.5s;
 }
 
-/* Show letter */
 .showLetter {
   top: 15%;
 }
 
-/* Hearts */
+/* ❤️ Hearts */
 .heart {
   position: absolute;
-  cursor: pointer;
+  font-size: 25px;
   animation: floatUp linear forwards;
+  cursor: pointer;
 }
 
 @keyframes floatUp {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(-120vh); opacity: 1; }
+  from { transform: translateY(0); }
+  to { transform: translateY(-120vh); }
 }
 
 .loveText {
   position: absolute;
   color: white;
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 22px;
   animation: pop 1s forwards;
 }
 
 @keyframes pop {
   0% { transform: scale(0); opacity: 0; }
-  50% { transform: scale(1.8); opacity: 1; }
-  100% { transform: scale(1); opacity: 0; }
+  50% { transform: scale(1.5); opacity: 1; }
+  100% { opacity: 0; }
 }
 </style>
+
 </head>
 
 <body>
 
-<!-- Envelope -->
+<!-- 💌 Envelope -->
 <div id="envelopeScreen">
   <div class="envelope">
     <div class="flap" id="flap"></div>
@@ -131,10 +130,9 @@ input {
   </div>
 </div>
 
-<!-- Main -->
+<!-- 💖 Scene -->
 <div id="mainScene">
 
-  <!-- 💌 LETTER -->
   <div class="letterBox" id="letterBox">
     <p id="text"></p>
   </div>
@@ -143,7 +141,7 @@ input {
 
 <script>
 
-// 💌 LETTER TEXT
+// 💌 YOUR LETTER (FIXED)
 let message = `My Love,
 
 I know we had a misunderstanding, and ever since then my heart has felt heavy. I don’t like the distance between us, even if it’s just silence. You mean too much to me to let ego or small arguments create walls between us.
@@ -154,7 +152,7 @@ If I hurt you in any way, I am truly sorry. It was never my intention to make yo
 
 Every relationship has small storms, but I believe what we share is stronger than any misunderstanding. I don’t want us to win arguments; I want us to understand each other better. I want to grow with you, learn with you, and build something based on trust and care.
 
-No matter what, please remember this — you are special to me. Not because you are perfect, but because you are you. And that is more than enough.
+No matter what, please remember this — you are special to me. Not because you are perfect, but because you are you.
 
 Let’s talk, clear everything, and smile again. Because your happiness truly matters to me.
 
@@ -162,74 +160,62 @@ With all my heart,
 Yours,  
 ARJUN RATHOD ❤️`;
 
-// Typing effect
-function typeLetter() {
-  let i = 0;
-  function typing() {
-    if (i < message.length) {
-      document.getElementById("text").innerHTML += message.charAt(i);
-      i++;
-      setTimeout(typing, 20);
-    }
-  }
-  typing();
+// typing (FIXED)
+function showLetter() {
+  document.getElementById("text").innerText = message;
 }
 
-// Show zip only if "dear"
-document.getElementById("nameInput").addEventListener("input", function() {
-  if (this.value.toLowerCase() === "dear") {
-    document.getElementById("zip").style.display = "block";
-  }
-});
+// hearts
+function createHeart() {
+  let heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerHTML = "❤️";
 
-// Drag zip
-let zip = document.getElementById("zip");
-let isDragging = false;
+  heart.style.left = Math.random()*100 + "vw";
+  heart.style.top = "100%";
+  heart.style.animationDuration = (Math.random()*2+4)+"s";
 
-zip.addEventListener("mousedown", () => isDragging = true);
-document.addEventListener("mouseup", () => isDragging = false);
+  document.getElementById("mainScene").appendChild(heart);
 
-document.addEventListener("mousemove", (e) => {
-  if (isDragging) {
-    zip.style.top = e.clientY + "px";
+  heart.onclick = () => {
+    let t=document.createElement("div");
+    t.className="loveText";
+    t.innerText="I Love You ❤️";
+    t.style.left=heart.style.left;
+    t.style.top=heart.style.top;
+    document.getElementById("mainScene").appendChild(t);
+    setTimeout(()=>t.remove(),1000);
+    heart.remove();
+  };
 
-    if (e.clientY > window.innerHeight / 2 + 100) {
-      openEnvelope();
-    }
-  }
-});
-
-// Mobile
-zip.addEventListener("touchstart", () => isDragging = true);
-document.addEventListener("touchend", () => isDragging = false);
-
-document.addEventListener("touchmove", (e) => {
-  if (isDragging) {
-    let y = e.touches[0].clientY;
-    zip.style.top = y + "px";
-
-    if (y > window.innerHeight / 2 + 100) {
-      openEnvelope();
-    }
-  }
-});
-
-// Open
-function openEnvelope() {
-  document.getElementById("flap").style.transform = "rotateX(180deg)";
-
-  setTimeout(() => {
-    document.getElementById("envelopeScreen").style.display = "none";
-    document.getElementById("mainScene").style.display = "block";
-
-    // 💌 show letter
-    setTimeout(() => {
-      document.getElementById("letterBox").classList.add("showLetter");
-      typeLetter();
-    }, 500);
-
-  }, 800);
+  setTimeout(()=>heart.remove(),7000);
 }
+
+function startHearts(){
+  for(let i=0;i<30;i++) setTimeout(createHeart,i*100);
+  setInterval(()=>{for(let i=0;i<10;i++) createHeart();},5000);
+}
+
+// unlock
+document.getElementById("nameInput").addEventListener("input", function(){
+  if(this.value.toLowerCase()==="dear"){
+    document.getElementById("zip").style.display="block";
+  }
+});
+
+document.getElementById("zip").onclick = function(){
+  document.getElementById("flap").style.transform="rotateX(180deg)";
+
+  setTimeout(()=>{
+    document.getElementById("envelopeScreen").style.display="none";
+    document.getElementById("mainScene").style.display="block";
+
+    document.getElementById("letterBox").classList.add("showLetter");
+    showLetter();
+    startHearts();
+
+  },800);
+};
 
 </script>
 
