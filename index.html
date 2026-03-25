@@ -6,29 +6,28 @@
 <style>
 body {
   margin: 0;
+  overflow: hidden;
+  font-family: cursive;
+}
+
+/* 💌 Envelope screen */
+#envelopeScreen {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background: linear-gradient(135deg, #ff4d6d, #ff99ac);
-  font-family: cursive;
-  overflow: hidden;
 }
 
-/* Envelope */
 .envelope {
   width: 300px;
   height: 200px;
   background: #ff6b81;
   position: relative;
-  cursor: pointer;
   border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
 }
 
-/* Flap */
 .flap {
   position: absolute;
   top: 0;
@@ -39,40 +38,59 @@ body {
   transition: 1s;
 }
 
-/* Input */
 input {
   position: absolute;
   bottom: 10px;
-  padding: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px;
   border: none;
   border-radius: 5px;
   text-align: center;
 }
 
-/* Letter */
-.letter {
+/* 💖 Main scene */
+#mainScene {
+  display: none;
+  height: 100vh;
+  background: radial-gradient(circle at center, #ff758c, #ff2e63);
+}
+
+/* Hearts */
+.heart {
   position: absolute;
-  width: 280px;
-  height: 180px;
-  background: white;
-  top: 10px;
-  left: 10px;
-  border-radius: 10px;
-  padding: 15px;
-  opacity: 0;
-  transform: translateY(50px);
-  transition: 1s;
-  overflow-y: auto;
+  cursor: pointer;
+  animation: floatUp linear forwards;
 }
 
-/* Open state */
-.open .flap {
-  transform: rotateX(180deg);
+@keyframes floatUp {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-120vh); opacity: 1; }
 }
 
-.open .letter {
-  opacity: 1;
-  transform: translateY(-120px);
+/* Explosion text */
+.loveText {
+  position: absolute;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  animation: pop 1.2s ease forwards;
+}
+
+@keyframes pop {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.8); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+/* Center title */
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 30px;
 }
 </style>
 
@@ -80,49 +98,89 @@ input {
 
 <body>
 
-<div class="envelope" id="env">
-  <div class="flap"></div>
-
-  <div class="letter" id="letter">
-    <p id="text"></p>
+<!-- 💌 Envelope Screen -->
+<div id="envelopeScreen">
+  <div class="envelope" id="env">
+    <div class="flap"></div>
+    <input type="text" id="nameInput" placeholder="Type your name..." />
   </div>
+</div>
 
-  <input type="text" id="nameInput" placeholder="Type your name..." />
+<!-- 💖 Main Love Scene -->
+<div id="mainScene">
+  <div class="center">For You ❤️</div>
 </div>
 
 <script>
 
-// Love letter
-let message = `Don't read this if you're still angry...
+// ❤️ Create heart
+function createHeart(isBurst = false) {
+  const heart = document.createElement("div");
+  heart.className = "heart";
 
-My Love,
+  const symbols = ["❤️","💖","💕","💘","💝"];
+  heart.innerHTML = symbols[Math.floor(Math.random()*symbols.length)];
 
-I know we had a misunderstanding, and ever since then my heart has felt heavy. I don't like this distance between us...
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.top = isBurst ? "50%" : "100%";
+  heart.style.fontSize = (Math.random()*20 + 25) + "px";
+  heart.style.animationDuration = (Math.random()*2 + 4) + "s";
 
-Let's talk… and smile again ❤️
+  document.getElementById("mainScene").appendChild(heart);
 
-Yours`;
+  heart.onclick = () => {
+    explodeHeart(heart);
+    heart.remove();
+  };
 
-// Typing effect
-function typeLetter() {
-  let i = 0;
-  function typing() {
-    if (i < message.length) {
-      document.getElementById("text").innerHTML += message.charAt(i);
-      i++;
-      setTimeout(typing, 30);
-    }
-  }
-  typing();
+  setTimeout(() => heart.remove(), 7000);
 }
 
-// Unlock logic
+// 💥 Explosion
+function explodeHeart(heart) {
+  for (let i = 0; i < 8; i++) {
+    const text = document.createElement("div");
+    text.className = "loveText";
+    text.innerText = "I Love You ❤️";
+
+    text.style.left = heart.style.left;
+    text.style.top = heart.style.top;
+
+    document.getElementById("mainScene").appendChild(text);
+
+    setTimeout(() => text.remove(), 1200);
+  }
+}
+
+// 💥 Burst
+function burstHearts() {
+  for (let i = 0; i < 30; i++) {
+    setTimeout(() => createHeart(true), i * 50);
+  }
+}
+
+// 🔁 Continuous
+function startHearts() {
+  burstHearts();
+  setInterval(() => {
+    for (let i = 0; i < 12; i++) createHeart();
+  }, 5000);
+}
+
+// ✍️ When name typed → open scene
 document.getElementById("nameInput").addEventListener("input", function() {
   if (this.value.length > 2) {
-    document.getElementById("env").classList.add("open");
-    typeLetter();
+    // hide envelope
+    document.getElementById("envelopeScreen").style.display = "none";
+
+    // show main scene
+    document.getElementById("mainScene").style.display = "block";
+
+    // start hearts
+    startHearts();
   }
 });
+
 </script>
 
 </body>
