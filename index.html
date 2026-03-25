@@ -3,14 +3,16 @@
 <head>
 <title>For You ❤️</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+
 <style>
 body {
   margin: 0;
   overflow: hidden;
-  font-family: cursive;
+  font-family: 'Dancing Script', cursive;
 }
 
-/* 💌 Envelope screen */
+/* Envelope screen */
 #envelopeScreen {
   height: 100vh;
   display: flex;
@@ -28,7 +30,6 @@ body {
   text-align: center;
 }
 
-/* flap */
 .flap {
   position: absolute;
   top: 0;
@@ -39,7 +40,6 @@ body {
   transition: 1s;
 }
 
-/* input */
 input {
   position: absolute;
   bottom: 15px;
@@ -51,7 +51,7 @@ input {
   text-align: center;
 }
 
-/* zipper */
+/* Zip */
 .zip {
   position: absolute;
   top: 40%;
@@ -62,11 +62,34 @@ input {
   cursor: grab;
 }
 
-/* 💖 Main Scene */
+/* Main scene */
 #mainScene {
   display: none;
   height: 100vh;
   background: radial-gradient(circle, #ff758c, #ff2e63);
+}
+
+/* Letter box */
+.letterBox {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  max-width: 400px;
+  height: 70%;
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  overflow-y: auto;
+  font-size: 18px;
+  color: #333;
+  transition: 1.5s ease;
+}
+
+/* Show letter */
+.showLetter {
+  top: 15%;
 }
 
 /* Hearts */
@@ -81,7 +104,6 @@ input {
   100% { transform: translateY(-120vh); opacity: 1; }
 }
 
-/* Explosion */
 .loveText {
   position: absolute;
   color: white;
@@ -95,23 +117,12 @@ input {
   50% { transform: scale(1.8); opacity: 1; }
   100% { transform: scale(1); opacity: 0; }
 }
-
-/* Title */
-.center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 30px;
-}
 </style>
-
 </head>
 
 <body>
 
-<!-- 💌 Envelope -->
+<!-- Envelope -->
 <div id="envelopeScreen">
   <div class="envelope">
     <div class="flap" id="flap"></div>
@@ -120,21 +131,57 @@ input {
   </div>
 </div>
 
-<!-- 💖 Scene -->
+<!-- Main -->
 <div id="mainScene">
-  <div class="center">For You ❤️</div>
+
+  <!-- 💌 LETTER -->
+  <div class="letterBox" id="letterBox">
+    <p id="text"></p>
+  </div>
+
 </div>
 
 <script>
 
-// show zip only if "dear"
+// 💌 LETTER TEXT
+let message = `My Love,
+
+I know we had a misunderstanding, and ever since then my heart has felt heavy. I don't like the distance between us, even if it's just silence. You mean too much to me to let ego or small arguments create walls between us.
+
+I'm not writing this to prove I'm right. I'm writing this because you are important to me. Your smile, your voice, the way you understand things, and even the way you get angry — everything about you matters to me. You are someone I deeply care about, respect, and value.
+
+If I hurt you in any way, I am truly sorry. It was never my intention to make you feel sad. Sometimes words come out wrong, but my feelings for you have always been genuine and pure. I admire your strength, your kindness, and the beautiful heart you carry.
+
+Every relationship has small storms, but I believe what we share is stronger than any misunderstanding. I don't want us to win arguments; I want us to understand each other better.
+
+No matter what, please remember this — you are special to me. Not because you are perfect, but because you are you.
+
+Let's talk, clear everything, and smile again. Because your happiness truly matters to me.
+
+With all my heart,
+Yours ❤️`;
+
+// Typing effect
+function typeLetter() {
+  let i = 0;
+  function typing() {
+    if (i < message.length) {
+      document.getElementById("text").innerHTML += message.charAt(i);
+      i++;
+      setTimeout(typing, 20);
+    }
+  }
+  typing();
+}
+
+// Show zip only if "dear"
 document.getElementById("nameInput").addEventListener("input", function() {
   if (this.value.toLowerCase() === "dear") {
     document.getElementById("zip").style.display = "block";
   }
 });
 
-// zip drag (simple tap/drag feel)
+// Drag zip
 let zip = document.getElementById("zip");
 let isDragging = false;
 
@@ -145,14 +192,13 @@ document.addEventListener("mousemove", (e) => {
   if (isDragging) {
     zip.style.top = e.clientY + "px";
 
-    // if dragged enough → open
     if (e.clientY > window.innerHeight / 2 + 100) {
       openEnvelope();
     }
   }
 });
 
-// mobile support
+// Mobile
 zip.addEventListener("touchstart", () => isDragging = true);
 document.addEventListener("touchend", () => isDragging = false);
 
@@ -167,55 +213,21 @@ document.addEventListener("touchmove", (e) => {
   }
 });
 
-// open envelope → go to hearts
+// Open
 function openEnvelope() {
   document.getElementById("flap").style.transform = "rotateX(180deg)";
 
   setTimeout(() => {
     document.getElementById("envelopeScreen").style.display = "none";
     document.getElementById("mainScene").style.display = "block";
-    startHearts();
+
+    // 💌 show letter
+    setTimeout(() => {
+      document.getElementById("letterBox").classList.add("showLetter");
+      typeLetter();
+    }, 500);
+
   }, 800);
-}
-
-// ❤️ hearts
-function createHeart(isBurst=false){
-  let heart=document.createElement("div");
-  heart.className="heart";
-  heart.innerHTML=["❤️","💖","💕","💘"][Math.floor(Math.random()*4)];
-  heart.style.left=Math.random()*100+"vw";
-  heart.style.top=isBurst?"50%":"100%";
-  heart.style.fontSize=(Math.random()*20+25)+"px";
-  heart.style.animationDuration=(Math.random()*2+4)+"s";
-
-  document.getElementById("mainScene").appendChild(heart);
-
-  heart.onclick=()=>{
-    explodeHeart(heart);
-    heart.remove();
-  };
-
-  setTimeout(()=>heart.remove(),7000);
-}
-
-function explodeHeart(h){
-  for(let i=0;i<6;i++){
-    let t=document.createElement("div");
-    t.className="loveText";
-    t.innerText="I Love You ❤️";
-    t.style.left=h.style.left;
-    t.style.top=h.style.top;
-    document.getElementById("mainScene").appendChild(t);
-    setTimeout(()=>t.remove(),1000);
-  }
-}
-
-function startHearts(){
-  for(let i=0;i<30;i++) setTimeout(()=>createHeart(true),i*50);
-
-  setInterval(()=>{
-    for(let i=0;i<10;i++) createHeart();
-  },5000);
 }
 
 </script>
