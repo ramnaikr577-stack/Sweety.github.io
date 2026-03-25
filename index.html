@@ -4,10 +4,12 @@
 <title>For You ❤️</title>
 
 <style>
-body {
+html, body {
   margin: 0;
+  padding: 0;
   overflow: hidden;
-  background: linear-gradient(135deg, #ff4d6d, #ff99ac);
+  height: 100%;
+  background: radial-gradient(circle at center, #ff758c, #ff2e63);
   font-family: cursive;
 }
 
@@ -16,25 +18,32 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.8);
   color: white;
-  font-size: 30px;
+  font-size: 32px;
   text-align: center;
   opacity: 0;
-  transition: 1s;
+  transition: 1s ease;
 }
 
 /* Hearts */
 .heart {
   position: absolute;
-  font-size: 20px;
   cursor: pointer;
+  user-select: none;
   animation: floatUp linear forwards;
 }
 
+/* NO fade — stays visible */
 @keyframes floatUp {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(-120vh); opacity: 0; }
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120vh) scale(1.2);
+    opacity: 1;
+  }
 }
 
 /* Explosion text */
@@ -43,12 +52,12 @@ body {
   color: white;
   font-size: 24px;
   font-weight: bold;
-  animation: pop 1s ease forwards;
+  animation: pop 1.2s ease forwards;
 }
 
 @keyframes pop {
   0% { transform: scale(0); opacity: 0; }
-  50% { transform: scale(1.5); opacity: 1; }
+  50% { transform: scale(1.8); opacity: 1; }
   100% { transform: scale(1); opacity: 0; }
 }
 </style>
@@ -61,52 +70,57 @@ body {
 
 <script>
 
-// 💥 Explosion on load
-function burstHearts() {
-  for (let i = 0; i < 30; i++) {
-    createHeart(true);
-  }
-}
-
-// ❤️ Create floating hearts
+// ❤️ Create heart (HD + smooth)
 function createHeart(isBurst = false) {
   const heart = document.createElement("div");
-  heart.classList.add("heart");
-  heart.innerHTML = ["❤️","💖","💕","💘"][Math.floor(Math.random()*4)];
+  heart.className = "heart";
+
+  const symbols = ["❤️","💖","💕","💘","💝"];
+  heart.innerHTML = symbols[Math.floor(Math.random()*symbols.length)];
 
   heart.style.left = Math.random() * 100 + "vw";
   heart.style.top = isBurst ? "50%" : "100%";
-  heart.style.fontSize = (Math.random()*25 + 15) + "px";
-  heart.style.animationDuration = (Math.random()*4 + 3) + "s";
+  heart.style.fontSize = (Math.random()*20 + 25) + "px";
+  heart.style.animationDuration = (Math.random()*2 + 4) + "s";
 
   document.body.appendChild(heart);
 
-  // 👆 Tap → explode + show text
+  // 💥 Tap → explosion
   heart.onclick = () => {
-    showLove(heart);
+    explodeHeart(heart);
     heart.remove();
   };
 
   setTimeout(() => heart.remove(), 7000);
 }
 
-// 💖 Show "I Love You"
-function showLove(heart) {
-  const text = document.createElement("div");
-  text.classList.add("loveText");
-  text.innerText = "I Love You ❤️";
+// 💥 Explosion (clean + visible)
+function explodeHeart(heart) {
+  for (let i = 0; i < 8; i++) {
+    const text = document.createElement("div");
+    text.className = "loveText";
+    text.innerText = "I Love You ❤️";
 
-  text.style.left = heart.style.left;
-  text.style.top = heart.style.top;
+    text.style.left = heart.style.left;
+    text.style.top = heart.style.top;
+    text.style.fontSize = (Math.random()*10 + 20) + "px";
 
-  document.body.appendChild(text);
+    document.body.appendChild(text);
 
-  setTimeout(() => text.remove(), 1000);
+    setTimeout(() => text.remove(), 1200);
+  }
+}
+
+// 💥 BIG START EXPLOSION
+function burstHearts() {
+  for (let i = 0; i < 30; i++) {
+    setTimeout(() => createHeart(true), i * 50);
+  }
 }
 
 // 🔁 Continuous hearts
 setInterval(() => {
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 12; i++) {
     createHeart();
   }
 }, 5000);
@@ -114,10 +128,12 @@ setInterval(() => {
 // Start
 burstHearts();
 
-// Show center text after delay
+// Show title
 setTimeout(() => {
-  document.getElementById("mainText").style.opacity = "1";
-}, 1500);
+  const text = document.getElementById("mainText");
+  text.style.opacity = "1";
+  text.style.transform = "translate(-50%, -50%) scale(1)";
+}, 1200);
 
 </script>
 
