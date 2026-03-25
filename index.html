@@ -12,7 +12,7 @@ body {
   overflow: hidden;
 }
 
-/* 💌 Envelope */
+/* Envelope */
 #envelopeScreen {
   height: 100vh;
   display: flex;
@@ -50,7 +50,6 @@ input {
   text-align: center;
 }
 
-/* zip */
 .zip {
   position: absolute;
   top: 40%;
@@ -61,14 +60,14 @@ input {
   cursor: pointer;
 }
 
-/* 💖 Main */
+/* Main */
 #mainScene {
   display: none;
   height: 100vh;
   background: radial-gradient(circle, #ff758c, #ff2e63);
 }
 
-/* 💌 Letter */
+/* Letter */
 .letterBox {
   position: absolute;
   top: -100%;
@@ -90,7 +89,7 @@ input {
   top: 15%;
 }
 
-/* ❤️ Hearts */
+/* Hearts */
 .heart {
   position: absolute;
   font-size: 25px;
@@ -103,6 +102,15 @@ input {
   to { transform: translateY(-120vh); }
 }
 
+/* Floating words */
+.word {
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  animation: floatUp linear forwards;
+}
+
+/* Explosion */
 .loveText {
   position: absolute;
   color: white;
@@ -121,7 +129,7 @@ input {
 
 <body>
 
-<!-- 💌 Envelope -->
+<!-- Envelope -->
 <div id="envelopeScreen">
   <div class="envelope">
     <div class="flap" id="flap"></div>
@@ -130,18 +138,23 @@ input {
   </div>
 </div>
 
-<!-- 💖 Scene -->
+<!-- Main -->
 <div id="mainScene">
 
   <div class="letterBox" id="letterBox">
     <p id="text"></p>
   </div>
 
+  <!-- 🎵 Music -->
+  <audio id="bgMusic" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mp3">
+  </audio>
+
 </div>
 
 <script>
 
-// 💌 YOUR LETTER (FIXED)
+// 💌 Letter
 let message = `My Love,
 
 I know we had a misunderstanding, and ever since then my heart has felt heavy. I don’t like the distance between us, even if it’s just silence. You mean too much to me to let ego or small arguments create walls between us.
@@ -150,34 +163,33 @@ I’m not writing this to prove I’m right. I’m writing this because you are 
 
 If I hurt you in any way, I am truly sorry. It was never my intention to make you feel sad. Sometimes words come out wrong, but my feelings for you have always been genuine and pure. I admire your strength, your kindness, and the beautiful heart you carry. You deserve patience, love, and understanding — and I promise to give you that.
 
-Every relationship has small storms, but I believe what we share is stronger than any misunderstanding. I don’t want us to win arguments; I want us to understand each other better. I want to grow with you, learn with you, and build something based on trust and care.
+Every relationship has small storms, but I believe what we share is stronger than any misunderstanding. I don’t want us to win arguments; I want us to understand each other better.
 
-No matter what, please remember this — you are special to me. Not because you are perfect, but because you are you.
+No matter what, please remember this — you are special to me.
 
-Let’s talk, clear everything, and smile again. Because your happiness truly matters to me.
+Let’s talk, clear everything, and smile again ❤️
 
 With all my heart,  
 Yours,  
 ARJUN RATHOD ❤️`;
 
-// typing (FIXED)
-function showLetter() {
+function showLetter(){
   document.getElementById("text").innerText = message;
 }
 
-// hearts
-function createHeart() {
-  let heart = document.createElement("div");
-  heart.className = "heart";
-  heart.innerHTML = "❤️";
+// ❤️ hearts
+function createHeart(){
+  let heart=document.createElement("div");
+  heart.className="heart";
+  heart.innerHTML="❤️";
 
-  heart.style.left = Math.random()*100 + "vw";
-  heart.style.top = "100%";
-  heart.style.animationDuration = (Math.random()*2+4)+"s";
+  heart.style.left=Math.random()*100+"vw";
+  heart.style.top="100%";
+  heart.style.animationDuration=(Math.random()*2+4)+"s";
 
   document.getElementById("mainScene").appendChild(heart);
 
-  heart.onclick = () => {
+  heart.onclick=()=>{
     let t=document.createElement("div");
     t.className="loveText";
     t.innerText="I Love You ❤️";
@@ -191,19 +203,40 @@ function createHeart() {
   setTimeout(()=>heart.remove(),7000);
 }
 
+// 💬 floating words
+function floatingWords(){
+  let words=["I Love You ❤️","Sorry 💔"];
+  let w=document.createElement("div");
+  w.className="word";
+  w.innerText=words[Math.floor(Math.random()*words.length)];
+
+  w.style.left=Math.random()*100+"vw";
+  w.style.top="100%";
+  w.style.animationDuration="6s";
+
+  document.getElementById("mainScene").appendChild(w);
+
+  setTimeout(()=>w.remove(),6000);
+}
+
+// start
 function startHearts(){
   for(let i=0;i<30;i++) setTimeout(createHeart,i*100);
-  setInterval(()=>{for(let i=0;i<10;i++) createHeart();},5000);
+
+  setInterval(()=>{
+    for(let i=0;i<10;i++) createHeart();
+    floatingWords();
+  },5000);
 }
 
 // unlock
-document.getElementById("nameInput").addEventListener("input", function(){
+document.getElementById("nameInput").addEventListener("input",function(){
   if(this.value.toLowerCase()==="dear"){
     document.getElementById("zip").style.display="block";
   }
 });
 
-document.getElementById("zip").onclick = function(){
+document.getElementById("zip").onclick=function(){
   document.getElementById("flap").style.transform="rotateX(180deg)";
 
   setTimeout(()=>{
@@ -214,10 +247,13 @@ document.getElementById("zip").onclick = function(){
     showLetter();
     startHearts();
 
+    // 🎵 start music
+    document.getElementById("bgMusic").play();
+
   },800);
 };
 
 </script>
 
 </body>
-</html>
+    </html>
