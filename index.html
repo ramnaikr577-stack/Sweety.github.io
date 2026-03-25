@@ -20,27 +20,29 @@ body {
 }
 
 .envelope {
-  width: 300px;
-  height: 200px;
+  width: 320px;
+  height: 220px;
   background: #ff6b81;
+  border-radius: 12px;
   position: relative;
-  border-radius: 10px;
   text-align: center;
 }
 
+/* flap */
 .flap {
   position: absolute;
   top: 0;
   width: 100%;
-  height: 100px;
+  height: 110px;
   background: #ff4757;
   clip-path: polygon(0 0, 50% 100%, 100% 0);
   transition: 1s;
 }
 
+/* input */
 input {
   position: absolute;
-  bottom: 10px;
+  bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
   padding: 6px;
@@ -49,11 +51,22 @@ input {
   text-align: center;
 }
 
-/* 💖 Main scene */
+/* zipper */
+.zip {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px;
+  display: none;
+  cursor: grab;
+}
+
+/* 💖 Main Scene */
 #mainScene {
   display: none;
   height: 100vh;
-  background: radial-gradient(circle at center, #ff758c, #ff2e63);
+  background: radial-gradient(circle, #ff758c, #ff2e63);
 }
 
 /* Hearts */
@@ -68,13 +81,13 @@ input {
   100% { transform: translateY(-120vh); opacity: 1; }
 }
 
-/* Explosion text */
+/* Explosion */
 .loveText {
   position: absolute;
   color: white;
   font-size: 24px;
   font-weight: bold;
-  animation: pop 1.2s ease forwards;
+  animation: pop 1s forwards;
 }
 
 @keyframes pop {
@@ -83,7 +96,7 @@ input {
   100% { transform: scale(1); opacity: 0; }
 }
 
-/* Center title */
+/* Title */
 .center {
   position: absolute;
   top: 50%;
@@ -98,88 +111,112 @@ input {
 
 <body>
 
-<!-- 💌 Envelope Screen -->
+<!-- 💌 Envelope -->
 <div id="envelopeScreen">
-  <div class="envelope" id="env">
-    <div class="flap"></div>
-    <input type="text" id="nameInput" placeholder="Type your name..." />
+  <div class="envelope">
+    <div class="flap" id="flap"></div>
+    <div class="zip" id="zip">🔓</div>
+    <input type="text" id="nameInput" placeholder="Type 'dear'..." />
   </div>
 </div>
 
-<!-- 💖 Main Love Scene -->
+<!-- 💖 Scene -->
 <div id="mainScene">
   <div class="center">For You ❤️</div>
 </div>
 
 <script>
 
-// ❤️ Create heart
-function createHeart(isBurst = false) {
-  const heart = document.createElement("div");
-  heart.className = "heart";
+// show zip only if "dear"
+document.getElementById("nameInput").addEventListener("input", function() {
+  if (this.value.toLowerCase() === "dear") {
+    document.getElementById("zip").style.display = "block";
+  }
+});
 
-  const symbols = ["❤️","💖","💕","💘","💝"];
-  heart.innerHTML = symbols[Math.floor(Math.random()*symbols.length)];
+// zip drag (simple tap/drag feel)
+let zip = document.getElementById("zip");
+let isDragging = false;
 
-  heart.style.left = Math.random() * 100 + "vw";
-  heart.style.top = isBurst ? "50%" : "100%";
-  heart.style.fontSize = (Math.random()*20 + 25) + "px";
-  heart.style.animationDuration = (Math.random()*2 + 4) + "s";
+zip.addEventListener("mousedown", () => isDragging = true);
+document.addEventListener("mouseup", () => isDragging = false);
+
+document.addEventListener("mousemove", (e) => {
+  if (isDragging) {
+    zip.style.top = e.clientY + "px";
+
+    // if dragged enough → open
+    if (e.clientY > window.innerHeight / 2 + 100) {
+      openEnvelope();
+    }
+  }
+});
+
+// mobile support
+zip.addEventListener("touchstart", () => isDragging = true);
+document.addEventListener("touchend", () => isDragging = false);
+
+document.addEventListener("touchmove", (e) => {
+  if (isDragging) {
+    let y = e.touches[0].clientY;
+    zip.style.top = y + "px";
+
+    if (y > window.innerHeight / 2 + 100) {
+      openEnvelope();
+    }
+  }
+});
+
+// open envelope → go to hearts
+function openEnvelope() {
+  document.getElementById("flap").style.transform = "rotateX(180deg)";
+
+  setTimeout(() => {
+    document.getElementById("envelopeScreen").style.display = "none";
+    document.getElementById("mainScene").style.display = "block";
+    startHearts();
+  }, 800);
+}
+
+// ❤️ hearts
+function createHeart(isBurst=false){
+  let heart=document.createElement("div");
+  heart.className="heart";
+  heart.innerHTML=["❤️","💖","💕","💘"][Math.floor(Math.random()*4)];
+  heart.style.left=Math.random()*100+"vw";
+  heart.style.top=isBurst?"50%":"100%";
+  heart.style.fontSize=(Math.random()*20+25)+"px";
+  heart.style.animationDuration=(Math.random()*2+4)+"s";
 
   document.getElementById("mainScene").appendChild(heart);
 
-  heart.onclick = () => {
+  heart.onclick=()=>{
     explodeHeart(heart);
     heart.remove();
   };
 
-  setTimeout(() => heart.remove(), 7000);
+  setTimeout(()=>heart.remove(),7000);
 }
 
-// 💥 Explosion
-function explodeHeart(heart) {
-  for (let i = 0; i < 8; i++) {
-    const text = document.createElement("div");
-    text.className = "loveText";
-    text.innerText = "I Love You ❤️";
-
-    text.style.left = heart.style.left;
-    text.style.top = heart.style.top;
-
-    document.getElementById("mainScene").appendChild(text);
-
-    setTimeout(() => text.remove(), 1200);
+function explodeHeart(h){
+  for(let i=0;i<6;i++){
+    let t=document.createElement("div");
+    t.className="loveText";
+    t.innerText="I Love You ❤️";
+    t.style.left=h.style.left;
+    t.style.top=h.style.top;
+    document.getElementById("mainScene").appendChild(t);
+    setTimeout(()=>t.remove(),1000);
   }
 }
 
-// 💥 Burst
-function burstHearts() {
-  for (let i = 0; i < 30; i++) {
-    setTimeout(() => createHeart(true), i * 50);
-  }
+function startHearts(){
+  for(let i=0;i<30;i++) setTimeout(()=>createHeart(true),i*50);
+
+  setInterval(()=>{
+    for(let i=0;i<10;i++) createHeart();
+  },5000);
 }
-
-// 🔁 Continuous
-function startHearts() {
-  burstHearts();
-  setInterval(() => {
-    for (let i = 0; i < 12; i++) createHeart();
-  }, 5000);
-}
-
-// ✍️ When name typed → open scene
-document.getElementById("nameInput").addEventListener("input", function() {
-  if (this.value.length > 2) {
-    // hide envelope
-    document.getElementById("envelopeScreen").style.display = "none";
-
-    // show main scene
-    document.getElementById("mainScene").style.display = "block";
-
-    // start hearts
-    startHearts();
-  }
-});
 
 </script>
 
