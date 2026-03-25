@@ -1,69 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Ram AI</title>
+<title>For You ❤️</title>
+
 <style>
-body{
-background:#111;
-color:white;
-font-family:Arial;
-text-align:center;
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to right, #ff758c, #ff7eb3);
+  font-family: 'Segoe Script', cursive;
+  overflow: hidden;
 }
-#chat{
-width:350px;
-height:300px;
-border:1px solid white;
-margin:auto;
-overflow:auto;
-padding:10px;
+
+/* Center box */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.box {
+  background: rgba(255,255,255,0.9);
+  padding: 40px;
+  border-radius: 20px;
+  width: 80%;
+  max-width: 500px;
+  text-align: center;
+  animation: fadeIn 2s;
+}
+
+h1 {
+  color: #ff4d6d;
+}
+
+#text {
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/* Floating hearts */
+.heart {
+  position: absolute;
+  color: red;
+  font-size: 20px;
+  animation: float 5s linear infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(100vh);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10vh);
+    opacity: 0;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<h1>Ram AI 🤖</h1>
+<div class="container">
+  <div class="box">
+    <h1>For Someone Special ❤️</h1>
+    <p id="text"></p>
+  </div>
+</div>
 
-<div id="chat"></div>
-
-<input id="msg" placeholder="Ask anything">
-<button onclick="send()">Send</button>
+<!-- Background Music -->
+<audio autoplay loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mp3">
+</audio>
 
 <script>
+// Typing effect
+let message = "Your love letter text here...";
+let i = 0;
 
-async function send(){
+function typeWriter() {
+  if (i < message.length) {
+    document.getElementById("text").innerHTML += message.charAt(i);
+    i++;
+    setTimeout(typeWriter, 40);
+  }
+}
+typeWriter();
 
-let message=document.getElementById("msg").value;
+// Floating hearts generator
+function createHeart() {
+  const heart = document.createElement("div");
+  heart.classList.add("heart");
+  heart.innerHTML = "❤️";
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.fontSize = (Math.random() * 20 + 10) + "px";
+  document.body.appendChild(heart);
 
-document.getElementById("chat").innerHTML+=
-"<p><b>You:</b> "+message+"</p>";
-
-let response=await fetch("https://api.openai.com/v1/chat/completions",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json",
-"Authorization":"Bearer YOUR_API_KEY"
-},
-
-body:JSON.stringify({
-model:"gpt-3.5-turbo",
-messages:[{role:"user",content:message}]
-})
-
-});
-
-let data=await response.json();
-
-let reply=data.choices[0].message.content;
-
-document.getElementById("chat").innerHTML+=
-"<p><b>AI:</b> "+reply+"</p>";
-
+  setTimeout(() => {
+    heart.remove();
+  }, 5000);
 }
 
+setInterval(createHeart, 300);
 </script>
 
 </body>
-</html>
+  </html>
