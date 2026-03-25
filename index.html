@@ -145,7 +145,7 @@ input {
     <p id="text"></p>
   </div>
 
-  <!-- 🎵 Music -->
+  <!-- 🎵 Romantic BGM -->
   <audio id="bgMusic" loop>
     <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mp3">
   </audio>
@@ -203,12 +203,12 @@ function createHeart(){
   setTimeout(()=>heart.remove(),7000);
 }
 
-// 💬 floating words
+// 💬 words
 function floatingWords(){
-  let words=["I Love You ❤️","Sorry 💔","my dear🥰"];
+  let arr=["I Love You ❤️","my dear🥰"];
   let w=document.createElement("div");
   w.className="word";
-  w.innerText=words[Math.floor(Math.random()*words.length)];
+  w.innerText=arr[Math.floor(Math.random()*arr.length)];
 
   w.style.left=Math.random()*100+"vw";
   w.style.top="100%";
@@ -219,7 +219,6 @@ function floatingWords(){
   setTimeout(()=>w.remove(),6000);
 }
 
-// start
 function startHearts(){
   for(let i=0;i<30;i++) setTimeout(createHeart,i*100);
 
@@ -236,6 +235,7 @@ document.getElementById("nameInput").addEventListener("input",function(){
   }
 });
 
+// open
 document.getElementById("zip").onclick=function(){
   document.getElementById("flap").style.transform="rotateX(180deg)";
 
@@ -247,7 +247,7 @@ document.getElementById("zip").onclick=function(){
     showLetter();
     startHearts();
 
-    // 🎵 start music
+    // 🎵 play music on interaction (works mobile)
     document.getElementById("bgMusic").play();
 
   },800);
@@ -256,4 +256,4 @@ document.getElementById("zip").onclick=function(){
 </script>
 
 </body>
-    </html>
+  </html>
